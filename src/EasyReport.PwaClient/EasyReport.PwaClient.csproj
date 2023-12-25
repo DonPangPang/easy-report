@@ -6,8 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
     <PackageReference Include="Masa.Blazor" Version="1.3.0-beta.4" />
 	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
 	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Service\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyReport.Domain\EasyReport.Domain.csproj" />
+    <ProjectReference Include="..\EasyReport.Infrastructure\EasyReport.Infrastructure.csproj" />
+    <ProjectReference Include="..\EasyReport.Shared\EasyReport.Shared.csproj" />
   </ItemGroup>
 </Project>

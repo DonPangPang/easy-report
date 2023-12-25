@@ -2,13 +2,16 @@
 
 namespace EasyReport.Domain;
 
-public class UserAuthorization : EntityBase, IEnabled, IDeleted
+public class UserAuthorization : EntityBase, IEnabled, ISafeDeleted
 {
     public required string Account { get; set; }
     public required string Password { get; set; }
     public bool IsEnabled { get; set; } = true;
     public bool IsDeleted { get; set; } = false;
 
-    public Guid? UserId { get; set; }
-    public User? User { get; set; }
+    public bool IsSuper { get; set; } = false;
+
+    public Guid UserId { get; set; }
+    public virtual User? User { get; set; }
+
 }

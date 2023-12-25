@@ -1,0 +1,23 @@
+@page "/login"
+@layout EmptyLayout
+@inject Request Request
+@inject ILocalStorageService LocalStorage
+
+<PageTitle>Login</PageTitle>
+
+<MButton OnClick="HandleLogin">登录</MButton>
+
+@code{
+    async Task HandleLogin(){
+        var res = await Request.PostAsync<AccessToken>("/api/Account/login", new LoginDto{
+            Username = "admin",
+            Password = "123456"
+        });
+
+        await LocalStorage.SetItemAsStringAsync("token", res?.Token);
+
+
+        var user = await Request.GetAsync<User>("/api/Account/current");
+        Console.WriteLine(user.ToJson());
+    }
+}

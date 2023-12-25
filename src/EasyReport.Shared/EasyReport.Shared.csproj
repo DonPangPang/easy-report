@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Soda.AutoMapper" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyReport.Domain\EasyReport.Domain.csproj" />
+    <ProjectReference Include="..\EasyReport.Infrastructure\EasyReport.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

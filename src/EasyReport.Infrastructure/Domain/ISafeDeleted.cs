@@ -1,6 +1,6 @@
 ﻿namespace EasyReport.Infrastructure.Domain;
 
-public interface IDeleted
+public interface ISafeDeleted
 {
     public bool IsDeleted { get; set; }
 }

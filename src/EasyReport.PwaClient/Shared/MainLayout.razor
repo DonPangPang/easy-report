@@ -1,5 +1,60 @@
 ﻿@inherits LayoutComponentBase
+@inject Request Request
 
 <MApp>
-    @Body
+    <MNavigationDrawer Class="deep-purple accent-4" @bind-MiniVariant="mini" Dark Permanent App>
+        <ChildContent>
+            <MListItem Class="px-2">
+                <MListItemAvatar Size="40">
+                    <MImage Src="@("https://randomuser.me/api/portraits/men/85.jpg")"></MImage>
+                </MListItemAvatar>
+
+                <MListItemTitle>MASA</MListItemTitle>
+
+                <MButton Icon OnClick="() => mini = !mini">
+                    <MIcon>mdi-chevron-left</MIcon>
+                </MButton>
+            </MListItem>
+            <MList>
+            <MDivider></MDivider>
+                @foreach (var item in groups)
+                {
+                    <MListItem Link Dark>
+                        <MListItemIcon>
+                            <MIcon Dark>mdi mid-group</MIcon>
+                        </MListItemIcon>
+
+                        <MListItemContent>
+                            <MListItemTitle>@item.Name</MListItemTitle>
+                        </MListItemContent>
+                    </MListItem>
+                }
+            </MList>
+        </ChildContent>
+
+        <AppendContent>
+            <div class="pa-2">
+                <MButton Block Dark>LogOut</MButton>
+            </div>
+        </AppendContent>
+    </MNavigationDrawer>
+    <MMain>
+        @Body
+    </MMain>
 </MApp>
+
+@code
+{
+    List<TodoGroup> groups = new();
+    bool mini = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await Request.GetAsync<PagedList<TodoGroup>>("/api/TodoGroup"
+            ,new TodoGroupQueryParameter{
+                OrderBy = $"{nameof(TodoGroup.Order)}"
+            });
+        groups = res ?? new List<TodoGroup>();
+        await base.OnInitializedAsync();
+    }
+}

@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using EasyReport.Infrastructure.Domain;
+﻿using EasyReport.Infrastructure.Domain;
 using EasyReport.Infrastructure.Extensions;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EasyReport.Domain;
 
-public class Todo : EntityBase, ICreationAudited, IModificationAudited, IDeleted
+public class Todo : EntityBase, ICreationAudited, IModificationAudited, ISafeDeleted
 {
     public required string Title { get; set; }
     public string? Description { get; set; }
@@ -15,17 +15,17 @@ public class Todo : EntityBase, ICreationAudited, IModificationAudited, IDeleted
     public bool IsCompleted { get; set; } = false;
     public DateTime CreationTime { get; set; }
     public Guid CreatorId { get; set; }
-    public User? Creator { get; set; }
+    public virtual User? Creator { get; set; }
     public DateTime? LastModificationTime { get; set; }
     public Guid? LastModifierId { get; set; }
-    public User? LastModifier { get; set; }
+    public virtual User? LastModifier { get; set; }
 
     public bool IsDeleted { get; set; } = false;
 
     public Guid? GroupId { get; set; }
-    public TodoGroup? Group { get; set; }
+    public virtual TodoGroup? Group { get; set; }
 
-    public ICollection<TodoTag> Tags { get; set; } = new List<TodoTag>();
+    public virtual ICollection<TodoTag> Tags { get; set; } = new List<TodoTag>();
 
     [JsonIgnore]
     public string? Links { get; set; }
@@ -37,5 +37,5 @@ public class Todo : EntityBase, ICreationAudited, IModificationAudited, IDeleted
         set => Links = value.ToJson();
     }
 
-    public ICollection<Resource> Resources { get; set; } = new List<Resource>();
+    public virtual ICollection<Resource> Resources { get; set; } = new List<Resource>();
 }
