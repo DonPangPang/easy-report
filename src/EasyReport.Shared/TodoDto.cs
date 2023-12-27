@@ -15,9 +15,11 @@ public class TodoDto : DtoBase
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
 
+    public bool IsCompleted { get; set; } = false;
+
     public Guid? GroupId { get; set; }
 
-    public ICollection<TodoTag> Tags { get; set; } = new List<TodoTag>();
+    public List<TodoTagDto> Tags { get; set; } = new List<TodoTagDto>();
 
     [JsonIgnore]
     public string? Links { get; set; }

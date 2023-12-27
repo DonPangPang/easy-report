@@ -1,6 +1,7 @@
 ﻿using EasyReport.Domain;
 using EasyReport.WebApi.Cache;
 using EasyReport.WebApi.Configurations;
+using EasyReport.WebApi.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -23,14 +24,14 @@ public class PermissionHandler(IUnitOfWork unitOfWork
         var authId = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrWhiteSpace(authId))
         {
-            context.Fail();
-            return;
+            // context.Fail();
+            throw new UnauthorizedAccessException();
         }
         var token = await cacheService.GetAsync<string>(authId);
         if (string.IsNullOrWhiteSpace(token))
         {
-            context.Fail();
-            return;
+            // context.Fail();
+            throw new UnauthorizedAccessException();
         }
         await cacheService.SetAsync(authId, token, Consts.Jwt.ExpiresIn);
         var authIdGuid = Guid.Parse(authId);

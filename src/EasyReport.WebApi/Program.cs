@@ -2,6 +2,7 @@ using EasyReport.WebApi.Cache;
 using EasyReport.WebApi.Configurations;
 using EasyReport.WebApi.Data;
 using EasyReport.WebApi.Extensions;
+using EasyReport.WebApi.Filters;
 using EasyReport.WebApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -39,14 +40,14 @@ builder.Services.AddAuthentication(setup =>
 {
     options.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateIssuer = true, //�Ƿ���֤Issuer
-        ValidIssuer = Consts.Jwt.Issuer, //������Issuer
-        ValidateAudience = true, //�Ƿ���֤Audience
-        ValidAudience = Consts.Jwt.Audience, //������Audience
-        ValidateIssuerSigningKey = true, //�Ƿ���֤SecurityKey
+        ValidateIssuer = true,
+        ValidIssuer = Consts.Jwt.Issuer,
+        ValidateAudience = true,
+        ValidAudience = Consts.Jwt.Audience,
+        ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Consts.Jwt.SecurityKey)), //SecurityKey
-        ValidateLifetime = true, //�Ƿ���֤ʧЧʱ��
-        ClockSkew = TimeSpan.FromSeconds(30), //����ʱ���ݴ�ֵ�������������ʱ�䲻ͬ�����⣨�룩
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromSeconds(30),
         RequireExpirationTime = true,
     };
 
@@ -93,7 +94,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(opts =>
+{
+    opts.Filters.Add<GlobalExceptionFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -102,7 +106,7 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
-        Description = "���¿�����������ͷ����Ҫ����Jwt��ȨToken��Bearer Token",
+        Description = "Input Token: Bearer Token",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
@@ -137,6 +141,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.Use(async (context, next) =>
+{
+
+    try
+    {
+        await next();
+    }
+    catch (UnauthorizedAccessException)
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        context.Response.ContentType = "application/json";
+    }
+});
 
 app.UseCors(Consts.DefaultCorsPolicyName);
 

@@ -1,0 +1,9 @@
+<span class="er-selector">@Content@ChildContent</span>
+
+@code {
+    [Parameter]
+    public string Content { get; set; } = string.Empty;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+}

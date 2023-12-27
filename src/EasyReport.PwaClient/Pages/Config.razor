@@ -4,6 +4,7 @@
 @layout MainLayout
 @inject MasaBlazor MasaBlazor
 @inject IJSRuntime JsRuntime
+@inject EventService EventService
 
 <PageTitle>系统配置</PageTitle>
 <div class="er-panel">
@@ -30,7 +31,7 @@
             </MCard>
         </MCol>
         <MCol Sm="4">
-            <MCard Class="rounded-xl"  Height="220">
+            <MCard Class="rounded-xl" Height="220">
                 <MCardTitle>
                     <MIcon Large Left>
                         mdi mdi-cog
@@ -39,8 +40,11 @@
                 </MCardTitle>
                 <MCardText>
                     <MDescriptions Column="1">
-                        <MDescriptionsItem Label="主题" Span="1"> 
-                            <MSwitch Value="_isDark" TValue="bool" OnClick="ClickSwitchTheme" LeftText="亮" RightText="暗" Color="black" TrackColor="#E5E6EB" />
+                        <MDescriptionsItem Label="主题" Span="1">
+                            <MSwitch Value="_isDark" TValue="bool"
+                                OnClick="ClickSwitchTheme" LeftText="亮"
+                                RightText="暗" Color="black"
+                                TrackColor="#E5E6EB" />
                         </MDescriptionsItem>
                     </MDescriptions>
                 </MCardText>
@@ -56,36 +60,49 @@
                     </MIcon>
                     <span class="text-h6 font-weight-light">分组</span>
                     <MSpacer></MSpacer>
-                    <MButton Color="purple" Dark OnClick="OnHandleGroupDialogOpen">添加分组</MButton>
-                    <MDialog @bind-Value="_groupDialogVisible" MaxWidth="400" ContentClass="rounded-xl">
+                    <MButton Color="purple" Dark
+                        OnClick="OnHandleGroupDialogOpen">添加分组</MButton>
+                    <MDialog @bind-Value="_groupDialogVisible" MaxWidth="400"
+                        ContentClass="rounded-xl">
                         <MCard Rounded="true">
                             <MCardTitle>添加分组</MCardTitle>
                             <MCardText>
-                                <MTextField Label="名称" @bind-Value="@_group.Name"/>
-                                <MTextField Label="描述" @bind-Value="@_group.Description"/>
-                                <MTextField Label="排序码" @bind-Value="@_group.Order"/>
+                                <MTextField Label="名称"
+                                    @bind-Value="@_group.Name" />
+                                <MTextField Label="描述"
+                                    @bind-Value="@_group.Description" />
+                                <MTextField Label="排序码"
+                                    @bind-Value="@_group.Order" />
                             </MCardText>
                             <MCardActions>
                                 <MSpacer></MSpacer>
-                                <MButton Color="primary" Text OnClick="OnHandleSaveGroup">确定</MButton>
-                                <MButton Text OnClick="()=>_groupDialogVisible = false">取消</MButton>
+                                <MButton Color="primary" Text
+                                    OnClick="OnHandleSaveGroup">确定</MButton>
+                                <MButton Text
+                                    OnClick="()=>_groupDialogVisible = false">取消
+                                </MButton>
                             </MCardActions>
                         </MCard>
                     </MDialog>
                 </MCardTitle>
                 <MCardText>
-                    <MDataTable Headers="groupHeaders" Items="_groups" ItemsPerPage="5">
+                    <MDataTable Headers="groupHeaders" Items="_groups"
+                        ItemsPerPage="5">
                         <ItemColContent>
                             @if (context.Header.Value == "actions")
                             {
+                                <MIcon Small Class="mr-2"
+                                    OnClick="()=>OnHandleEditGroup(context.Item)">
+                                    mdi-pencil</MIcon>
                                 <MIcon Small
-                                Class="mr-2"
-                                OnClick="()=>OnHandleEditGroup(context.Item)">mdi-pencil</MIcon>
-                                <MIcon Small
-                                OnClick="()=>OnHandleDeleteGroup(context.Item)">mdi-delete</MIcon>
+                                    OnClick="()=>OnHandleDeleteGroup(context.Item)">
+                                    mdi-delete</MIcon>
                             }
-                            else if(context.Header.Value == nameof(TodoGroup.Description)){
-                                <span  class="d-inline-block text-truncate">@context.Item.Description</span>
+                            else if (context.Header.Value ==
+                            nameof(TodoGroup.Description))
+                            {
+                                <span
+                                    class="d-inline-block text-truncate">@context.Item.Description</span>
                             }
                             else
                             {
@@ -104,35 +121,47 @@
                     </MIcon>
                     <span class="text-h6 font-weight-light">标签</span>
                     <MSpacer></MSpacer>
-                    <MButton Color="purple" Dark OnClick="()=>_tagDialogVisible = true">添加标签</MButton>
-                    <MDialog @bind-Value="_tagDialogVisible" MaxWidth="400"  ContentClass="rounded-xl">
+                    <MButton Color="purple" Dark
+                        OnClick="()=>_tagDialogVisible = true">添加标签</MButton>
+                    <MDialog @bind-Value="_tagDialogVisible" MaxWidth="400"
+                        ContentClass="rounded-xl">
                         <MCard>
                             <MCardTitle>添加标签</MCardTitle>
                             <MCardText>
-                                <MTextField Label="名称" @bind-Value="@_tag.Name"/>
-                                <MTextField Label="描述" @bind-Value="@_tag.Description"/>
+                                <MTextField Label="名称"
+                                    @bind-Value="@_tag.Name" />
+                                <MTextField Label="描述"
+                                    @bind-Value="@_tag.Description" />
                             </MCardText>
                             <MCardActions>
                                 <MSpacer></MSpacer>
-                                <MButton Color="primary" Text  OnClick="OnHandleSaveTag">确定</MButton>
-                                <MButton Text OnClick="()=>_tagDialogVisible = false">取消</MButton>
+                                <MButton Color="primary" Text
+                                    OnClick="OnHandleSaveTag">确定</MButton>
+                                <MButton Text
+                                    OnClick="()=>_tagDialogVisible = false">取消
+                                </MButton>
                             </MCardActions>
                         </MCard>
                     </MDialog>
                 </MCardTitle>
                 <MCardText>
-                    <MDataTable Headers="tagHeaders" Items="_tags" ItemsPerPage="5">
+                    <MDataTable Headers="tagHeaders" Items="_tags"
+                        ItemsPerPage="5">
                         <ItemColContent>
                             @if (context.Header.Value == "actions")
                             {
+                                <MIcon Small Class="mr-2"
+                                    OnClick="()=>OnHandleEditTag(context.Item)">
+                                    mdi-pencil</MIcon>
                                 <MIcon Small
-                                Class="mr-2"
-                                OnClick="()=>OnHandleEditTag(context.Item)">mdi-pencil</MIcon>
-                                <MIcon Small
-                                OnClick="()=>OnHandleDeleteTag(context.Item)">mdi-delete</MIcon>
+                                    OnClick="()=>OnHandleDeleteTag(context.Item)">
+                                    mdi-delete</MIcon>
                             }
-                            else if(context.Header.Value == nameof(TodoTag.Description)){
-                                <span  class="d-inline-block text-truncate">@context.Item.Description</span>
+                            else if (context.Header.Value ==
+                            nameof(TodoTag.Description))
+                            {
+                                <span
+                                    class="d-inline-block text-truncate">@context.Item.Description</span>
                             }
                             else
                             {
@@ -143,26 +172,32 @@
                 </MCardText>
             </MCard>
         </MCol>
-    </MRow> 
+    </MRow>
 </div>
 
 <style>
-    .er-panel{
+    .er-panel {
         margin: 1rem;
     }
 </style>
-@code{
+@code {
 
     protected override async Task OnInitializedAsync()
     {
         _isDark = MasaBlazor?.Theme?.Dark ?? false;
 
-        _groups = await Request.GetAsync<PagedList<TodoGroup>>("api/TodoGroup", new TodoGroupQueryParameter(){OrderBy = $"{nameof(TodoGroup.Order)}"}) ?? new List<TodoGroup>();
+        _groups = await Request.GetAsync<PagedList<TodoGroup>>("api/TodoGroup", new
+        TodoGroupQueryParameter()
+            { OrderBy = $"{nameof(TodoGroup.Order)}" }) ?? new
+        List<TodoGroup>();
 
-        _tags = await Request.GetAsync<PagedList<TodoTag>>("api/TodoTag", new TodoTagQueryParameter(){OrderBy = $"{nameof(TodoTag.Name)}"}) ?? new List<TodoTag>();
+        _tags = await Request.GetAsync<PagedList<TodoTag>>("api/TodoTag", new
+        TodoTagQueryParameter()
+            { OrderBy = $"{nameof(TodoTag.Name)}" }) ?? new
+        List<TodoTag>();
 
         StateHasChanged();
-        
+
 
         await base.OnInitializedAsync();
     }
@@ -171,25 +206,25 @@
     private List<IBrowserFile> _files = new();
 
     List<TodoGroup> _groups = new();
-    
-    List<DataTableHeader<TodoGroup>> groupHeaders = new(){
-        new () { Text = "名称", Value = "Name" },
-        new () { Text = "描述", Value = "Description" },
-        new () { Text = "排序码", Value = "Order" },
-        new () { Text = "操作", Value = "actions" }
-    };
 
-    TodoGroup _group = new(){Name = "未命名分组"};
+    List<DataTableHeader<TodoGroup>> groupHeaders = new(){
+new () { Text = "名称", Value = "Name" },
+new () { Text = "描述", Value = "Description" },
+new () { Text = "排序码", Value = "Order" },
+new () { Text = "操作", Value = "actions" }
+};
+
+    TodoGroup _group = new() { Name = "未命名分组" };
     bool _groupDialogVisible = false;
 
     int _editedIndex = -1;
 
     [CascadingParameter]
-    private MainLayout MainLayout{get; set;} = null!;
+    private MainNav MainNav { get; set; } = null!;
 
     async Task OnHandleSaveGroup()
     {
-        if(_editedIndex > -1)
+        if (_editedIndex > -1)
         {
             var entity = await Request.PutAsync<TodoGroup>("api/TodoGroup", _group);
             _groups[_editedIndex] = entity ?? _groups[_editedIndex];
@@ -201,10 +236,10 @@
             _groups.Add(entity ?? _group);
         }
 
-        
+
         OnHandleGroupDialogClose();
-        
-        await MainLayout.FetchDataAsync();
+
+        await EventService.NotifyGroupsChangeAsync();
     }
 
     void OnHandleEditGroup(TodoGroup group)
@@ -216,10 +251,10 @@
 
     async Task OnHandleDeleteGroup(TodoGroup group)
     {
-        await Request.DeleteAsync<string>($"api/TodoGroup/{group.Id}"); 
+        await Request.DeleteAsync<string>($"api/TodoGroup/{group.Id}");
 
         _groups.Remove(group);
-        await MainLayout.FetchDataAsync();
+        await EventService.NotifyGroupsChangeAsync();
     }
 
     void OnHandleGroupDialogOpen()
@@ -229,31 +264,31 @@
 
     void OnHandleGroupDialogClose()
     {
-        _group = new TodoGroup(){Name = "未命名分组"};
+        _group = new TodoGroup() { Name = "未命名分组" };
         _editedIndex = -1;
         _groupDialogVisible = false;
 
         StateHasChanged();
     }
     #endregion Group
-    
+
     #region Tag
     @* private List<IBrowserFile> _files = new(); *@
 
     List<TodoTag> _tags = new();
-    
-    List<DataTableHeader<TodoTag>> tagHeaders = new(){
-        new () { Text = "名称", Value = "Name" },
-        new () { Text = "描述", Value = "Description" },
-        new () { Text = "操作", Value = "actions" }
-    };
 
-    TodoTag _tag = new(){Name = "未命名标签"};
+    List<DataTableHeader<TodoTag>> tagHeaders = new(){
+new () { Text = "名称", Value = "Name" },
+new () { Text = "描述", Value = "Description" },
+new () { Text = "操作", Value = "actions" }
+};
+
+    TodoTag _tag = new() { Name = "未命名标签" };
     bool _tagDialogVisible = false;
 
     async Task OnHandleSaveTag()
     {
-        if(_editedIndex > -1)
+        if (_editedIndex > -1)
         {
             await Request.PutAsync<string>("api/TodoTag", _tag);
             _tagDialogVisible = true;
@@ -265,8 +300,8 @@
             _tags.Add(_tag);
         }
 
-        
-        OnHandleTagDialogClose(); 
+
+        OnHandleTagDialogClose();
     }
 
     void OnHandleEditTag(TodoTag tag)
@@ -289,19 +324,23 @@
 
     void OnHandleTagDialogClose()
     {
-        _tag = new TodoTag(){Name = "未命名分组"};
+        _tag = new TodoTag() { Name = "未命名分组" };
         _editedIndex = -1;
         _tagDialogVisible = false;
     }
     #endregion Tag
 
     #region config
+
+    [CascadingParameter]
+    private MainLayout MainLayout { get; set; } = null!;
     bool _isDark;
 
     private async Task ClickSwitchTheme(MouseEventArgs args)
     {
         _isDark = !_isDark;
-        await JsRuntime.InvokeVoidAsync("switchTheme", DotNetObjectReference.Create(MainLayout), 0 ,0);
+        await JsRuntime.InvokeVoidAsync("switchTheme",
+        DotNetObjectReference.Create(MainLayout), 0, 0);
     }
 
     #endregion config

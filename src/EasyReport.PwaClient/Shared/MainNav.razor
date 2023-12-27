@@ -1,0 +1,252 @@
+@inject Request Request
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+@inject MasaBlazor MasaBlazor
+@inject IJwtAuthProvider JwtAuthProvider
+@inject EventService EventService
+@layout LayoutComponentBase
+
+<CascadingValue Value="this">
+    @* Class="deep-purple accent-4" *@
+    <MNavigationDrawer @bind-MiniVariant="mini" HideOverlay Permanent App>
+        <ChildContent>
+            <MListItem Class="px-2">
+                @if (user?.Avatar is null)
+                {
+                    <MListItemAvatar Size="40" Color="purple">
+                        <span class="white--text text-h5">胖</span>
+                    </MListItemAvatar>
+                }
+                else
+                {
+                    <MListItemAvatar Size="40">
+                        <MImage
+                            Src="@("https://randomuser.me/api/portraits/men/85.jpg")">
+                        </MImage>
+                    </MListItemAvatar>
+                }
+
+                <MListItemTitle>@Username</MListItemTitle>
+
+                <MButton Icon OnClick="ChangeMiniSize">
+                    <MIcon>mdi-chevron-left</MIcon>
+                </MButton>
+            </MListItem>
+            <MList>
+                <MDivider></MDivider>
+
+                <MTooltip Right>
+                    <ActivatorContent>
+                        <MListItem Link
+                            OnClick="() => NavigationManager.NavigateTo(Consts.RouteMap.Home)"
+                            @attributes="@context.Attrs">
+                            <MListItemIcon>
+                                <MIcon>mdi mdi-view-dashboard</MIcon>
+                            </MListItemIcon>
+
+                            <MListItemContent>
+                                <MListItemTitle>工作台</MListItemTitle>
+                            </MListItemContent>
+                        </MListItem>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <span>工作台</span>
+                    </ChildContent>
+                </MTooltip>
+
+                <MDivider Light></MDivider>
+                <MTooltip Right>
+                    <ActivatorContent>
+                        <MListItem Link
+                            OnClick="() => NavigationManager.NavigateTo(Consts.RouteMap.TodoDay)"
+                            @attributes="@context.Attrs">
+                            <MListItemIcon>
+                                <MIcon>mdi mdi-weather-sunny</MIcon>
+                            </MListItemIcon>
+
+                            <MListItemContent>
+                                <MListItemTitle>我的一天</MListItemTitle>
+                            </MListItemContent>
+                        </MListItem>
+
+                    </ActivatorContent>
+                    <ChildContent>
+                        <span>我的一天</span>
+                    </ChildContent>
+                </MTooltip>
+                <MTooltip Right>
+                    <ActivatorContent>
+                        <MListItem Link
+                            OnClick="() => NavigationManager.NavigateTo(Consts.RouteMap.TodoWeek)"
+                            @attributes="@context.Attrs">
+                            <MListItemIcon>
+                                <MIcon>mdi mdi-lightbulb-on-10</MIcon>
+                            </MListItemIcon>
+
+                            <MListItemContent>
+                                <MListItemTitle>满满一周</MListItemTitle>
+                            </MListItemContent>
+                        </MListItem>
+
+                    </ActivatorContent>
+                    <ChildContent>
+                        <span>满满一周</span>
+                    </ChildContent>
+                </MTooltip>
+                <MTooltip Right>
+                    <ActivatorContent>
+                        <MListItem Link
+                            OnClick="() => NavigationManager.NavigateTo(Consts.RouteMap.TodoMonth)"
+                            @attributes="@context.Attrs">
+                            <MListItemIcon>
+                                <MIcon>mdi mdi-calendar-range</MIcon>
+                            </MListItemIcon>
+
+                            <MListItemContent>
+                                <MListItemTitle>熬完了一个月</MListItemTitle>
+                            </MListItemContent>
+                        </MListItem>
+
+                    </ActivatorContent>
+                    <ChildContent>
+                        <span>熬完了一个月</span>
+                    </ChildContent>
+                </MTooltip>
+
+                <MDivider></MDivider>
+                @foreach (var item in groups)
+                {
+                    <MTooltip Right>
+                        <ActivatorContent>
+                            <MListItem Link @attributes="@context.Attrs">
+                                <MIcon>mdi mdi-group</MIcon>
+                                <MListItemIcon>
+
+                                </MListItemIcon>
+
+                                <MListItemContent>
+                                    <MListItemTitle>@item.Name</MListItemTitle>
+                                </MListItemContent>
+                            </MListItem>
+
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span>@(item.Description ?? item.Name)</span>
+                        </ChildContent>
+                    </MTooltip>
+                }
+
+            </MList>
+        </ChildContent>
+
+        <AppendContent>
+            <MTooltip Right>
+                <ActivatorContent>
+                    <MListItem Link
+                        OnClick="() => NavigationManager.NavigateTo(Consts.RouteMap.Config)"
+                        @attributes="@context.Attrs">
+                        <MListItemIcon>
+                            <MIcon>mdi mdi-cog</MIcon>
+                        </MListItemIcon>
+
+                        <MListItemContent>
+                            <MListItemTitle>系统设置</MListItemTitle>
+                        </MListItemContent>
+                    </MListItem>
+                </ActivatorContent>
+                <ChildContent>
+                    <span>系统设置</span>
+                </ChildContent>
+            </MTooltip>
+            <MTooltip Right>
+                <ActivatorContent>
+                    <MListItem Link OnClick="HandleExistAsync"
+                        @attributes="@context.Attrs">
+                        <MListItemIcon>
+                            <MIcon>mdi mdi-exit-to-app</MIcon>
+                        </MListItemIcon>
+
+                        <MListItemContent>
+                            <MListItemTitle>退出</MListItemTitle>
+                        </MListItemContent>
+                    </MListItem>
+                </ActivatorContent>
+                <ChildContent>
+                    <span>退出</span>
+                </ChildContent>
+            </MTooltip>
+
+        </AppendContent>
+    </MNavigationDrawer>
+</CascadingValue>
+
+
+
+<MMain>
+    <MContainer Fluid Class="er-container">
+        @ChildContent
+    </MContainer>
+</MMain>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    List<TodoGroup> groups = new();
+    bool mini = true;
+
+    void ChangeMiniSize()
+    {
+        mini = !mini;
+    }
+
+    User? user = new() { Name = "Guest" };
+
+    string Username => user?.Name ?? "Guest";
+
+    public async Task FetchDataAsync()
+    {
+        user = await Request.GetAsync<User>("/api/Account/current");
+        await LocalStorage.SetItemAsStringAsync("user", user?.ToJson() ?? string.Empty);
+
+        var res = await Request.GetAsync<PagedList<TodoGroup>>("/api/TodoGroup"
+        , new TodoGroupQueryParameter
+            {
+                OrderBy = $"{nameof(TodoGroup.Order)}"
+            });
+        groups = res ?? new List<TodoGroup>();
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await FetchDataAsync();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        EventService.OnGroupsChangeAsync += FetchDataAsync;
+
+        await base.OnInitializedAsync();
+    }
+
+    public void Dispose()
+    {
+        EventService.OnGroupsChangeAsync -= FetchDataAsync;
+    }
+
+    async Task HandleExistAsync()
+    {
+        await LocalStorage.RemoveItemAsync("user");
+        NavigationManager.NavigateTo(Consts.RouteMap.Login);
+        await Request.GetAsync<string>("/api/Account/Logout");
+        await JwtAuthProvider.Logout();
+    }
+}

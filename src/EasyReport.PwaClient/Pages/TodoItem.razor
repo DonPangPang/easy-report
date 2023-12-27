@@ -1,0 +1,93 @@
+@inject IJSRuntime JsRuntime
+
+<MCard Class="er-card" OnClick="HandleOnClick">
+    <MCheckbox Ripple="true" TValue="bool" Checked="@Item.IsCompleted"
+        OnChange="HandleComplate"
+        OnIcon="mdi mdi-checkbox-marked-circle-outline"
+        OffIcon="mdi mdi-checkbox-blank-circle-outline" />
+
+    <MTooltip Bottom>
+        <ActivatorContent>
+            <p @attributes="@context.Attrs"
+                class="d-inline-block text-truncate @(Item.IsCompleted ? "text-decoration-line-through" : "")">
+                <Text>@Item.Title</Text>
+            </p>
+        </ActivatorContent>
+        <ChildContent>
+            <Text>@Item.Title</Text>
+        </ChildContent>
+    </MTooltip>
+
+    <MSpacer></MSpacer>
+    @foreach (var tag in Item.Tags)
+    {
+        <MChip Color="Color.Primary" TextColor="Color.White" Class="mr-2" Label
+            Small>
+            <MTooltip Bottom>
+                <ActivatorContent>
+                    <p @attributes="@context.Attrs"
+                        class="d-inline-block text-truncate @(Item.IsCompleted ? "text-decoration-line-through" : "")"
+                        style="max-width: 2rem;">
+                        <Text>@tag.Name</Text>
+                    </p>
+                </ActivatorContent>
+                <ChildContent>
+                    <Text>@tag.Name</Text>
+                </ChildContent>
+            </MTooltip>
+        </MChip>
+    }
+</MCard>
+
+<style>
+    .er-card {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding-left: 1rem;
+    }
+
+    .er-card p {
+        margin: auto 0;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public TodoDto Item { get; set; } = new TodoDto()
+        {
+            Title = "大家好，我是练习了2坤年的编码练习生，我喜欢唱、跳、Rap、篮球。",
+            IsCompleted = false,
+            Tags = new List<TodoTagDto>(){
+new TodoTagDto(){ Name = "Tag 1111111111111111111111111111"},
+new TodoTagDto(){ Name = "Tag 2"},
+new TodoTagDto(){ Name = "Tag 3"},
+},
+        };
+
+    [Parameter]
+    public EventCallback<bool> OnComplete { get; set; }
+
+    [Parameter]
+    public EventCallback<TodoDto> OnClick { get; set; }
+
+
+    bool _mouseMoveIn = false;
+
+    void MoveIn(bool moveIn)
+    {
+        Console.WriteLine($"MoveIn {moveIn}");
+        _mouseMoveIn = moveIn;
+    }
+
+    async Task HandleComplate(bool isCompleted)
+    {
+        Item.IsCompleted = isCompleted;
+        await OnComplete.InvokeAsync(isCompleted);
+    }
+
+    async Task HandleOnClick()
+    {
+        await OnClick.InvokeAsync(Item);
+    }
+}

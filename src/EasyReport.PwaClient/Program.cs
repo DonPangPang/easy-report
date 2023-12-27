@@ -3,6 +3,7 @@ using EasyReport.PwaClient;
 using EasyReport.PwaClient.Service;
 using Masa.Blazor;
 using Masa.Blazor.Presets;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -19,6 +20,15 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<Request>();
 builder.Services.AddScoped<IToastService, ToastService>();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddAuthorizationCore();
+
+builder.Services.AddScoped<JwtAuthProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthProvider>(
+    provider => provider.GetRequiredService<JwtAuthProvider>()
+);
+builder.Services.AddScoped<IJwtAuthProvider, JwtAuthProvider>(provider => provider.GetRequiredService<JwtAuthProvider>());
+
+builder.Services.AddSingleton<EventService>();
 
 builder.Services.AddMasaBlazor(options =>
 {

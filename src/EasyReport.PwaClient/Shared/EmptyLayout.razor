@@ -1,5 +1,10 @@
 @inherits LayoutComponentBase
 
 <MApp>
-    @Body
+    @ChildContent
 </MApp>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+}

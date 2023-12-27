@@ -16,8 +16,8 @@ public class TodoController(IUnitOfWork unitOfWork)
     {
         var result = await _unitOfWork.Query<Todo>()
             .WhereIf(parameter.GroupId.HasValue, x => x.GroupId == parameter.GroupId)
-            .WhereIf(parameter.StartTime.HasValue, x => x.CreationTime >= parameter.StartTime)
-            .WhereIf(parameter.EndTime.HasValue, x => x.CreationTime <= parameter.EndTime)
+            .WhereIf(parameter.StartTime.HasValue, x => x.CreationTime.Date > parameter.StartTime!.Value.Date)
+            .WhereIf(parameter.EndTime.HasValue, x => x.CreationTime.Date <= parameter.EndTime!.Value.Date)
             .ToListAsync(parameter);
 
         return Ok(result);

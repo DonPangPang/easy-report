@@ -1,21 +1,24 @@
 @page "/login"
-@layout EmptyLayout
 @inject Request Request
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
+@inject IJwtAuthProvider JwtAuthProvider
 
 <PageTitle>Login</PageTitle>
 
 <MButton OnClick="HandleLogin">登录</MButton>
 
-@code{
-    async Task HandleLogin(){
-        var res = await Request.PostAsync<AccessToken>("/api/Account/login", new LoginDto{
-            Username = "admin",
-            Password = "123456"
-        });
+@code {
+    async Task HandleLogin()
+    {
+        var res = await Request.PostAsync<AccessToken>("/api/Account/login", new
+        LoginDto
+            {
+                Username = "admin",
+                Password = "123456"
+            });
 
-        await LocalStorage.SetItemAsStringAsync("token", res?.Token);
+        await JwtAuthProvider.Login(res?.Token ?? string.Empty);
 
 
         NavigationManager.NavigateTo("/");

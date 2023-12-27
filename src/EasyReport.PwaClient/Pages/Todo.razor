@@ -1,11 +1,95 @@
 @page "/todo"
 @page "/todo/{id:int}"
+@inject Request Request
 
 <PageTitle>Task</PageTitle>
-<h1>@Id</h1>
+
+@foreach (var item in todos)
+{
+    <TodoItem Item="item" />
+}
 
 
-@code{
+<MNavigationDrawer @bind-MiniVariant="_mini" MiniVariantWidth="0" App Right
+    Permanent>
+    <MListItem Class="px-2">
+        <MListItemAvatar Size="40">
+            <MImage Src="@("https://randomuser.me/api/portraits/men/85.jpg")">
+            </MImage>
+        </MListItemAvatar>
+
+        <MListItemTitle>MASA</MListItemTitle>
+
+        <MButton Icon OnClick="() => _mini = !_mini">
+            <MIcon>mdi-chevron-left</MIcon>
+        </MButton>
+    </MListItem>
+
+    <MDivider></MDivider>
+
+    <MList Dense>
+        @foreach (var item in _items)
+        {
+            <MListItem Link>
+                <MListItemIcon>
+                    <MIcon>@item.Icon</MIcon>
+                </MListItemIcon>
+
+                <MListItemContent>
+                    <MListItemTitle>@item.Title</MListItemTitle>
+                </MListItemContent>
+            </MListItem>
+        }
+    </MList>
+</MNavigationDrawer>
+
+
+<TodoItem OnClick="()=>_mini = !_mini" />
+<TodoItem />
+<TodoItem />
+<TodoItem />
+
+@code {
     [Parameter]
     public int Id { get; set; } = 0;
+
+    (DateTime startTime, DateTime endTiem) dateRange => (DateTime.Now.AddDays(-Id),
+    DateTime.Now);
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    PagedList<TodoDto> todos = new PagedList<TodoDto>();
+
+    string? _keyword;
+    Guid? _groupId;
+    bool? isCompleted;
+
+    async Task FetchDataAsync()
+    {
+        todos = await Request.GetAsync<PagedList<TodoDto>>($"api/todo/{Id}", new
+        TodoQueryParameter
+            {
+                KeyWords = _keyword,
+                GroupId = _groupId,
+                IsCompleted = isCompleted,
+                StartTime = dateRange.startTime,
+                EndTime = dateRange.endTiem
+            }) ?? new PagedList<TodoDto>();
+    }
+
+    private bool _mini = true;
+    private class ItemDemo
+    {
+        public string Title { get; set; }
+        public string Icon { get; set; }
+    }
+    private List<ItemDemo> _items = new()
+{
+new ItemDemo { Title = "Home", Icon = "mdi-home-city" },
+new ItemDemo { Title = "My Account", Icon = "mdi-account" },
+new ItemDemo { Title = "Users", Icon = "mdi-account-group-outline" }
+};
 }
