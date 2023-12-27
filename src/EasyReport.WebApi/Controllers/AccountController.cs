@@ -63,7 +63,7 @@ public class AccountController(
     }
 
 
-    [HttpGet]
+    [HttpGet("logout")]
     public async Task<IActionResult> LogOut()
     {
         var authId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;

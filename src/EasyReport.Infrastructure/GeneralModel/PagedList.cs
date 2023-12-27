@@ -11,6 +11,7 @@ public class PagedList<T> : List<T>
     public bool HasPreviousPage => PageIndex > 1;
     public bool HasNextPage => PageIndex < TotalPages;
 
+    public PagedList() { }
 
     public PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
     {

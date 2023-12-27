@@ -1,6 +1,8 @@
 using Blazored.LocalStorage;
 using EasyReport.PwaClient;
 using EasyReport.PwaClient.Service;
+using Masa.Blazor;
+using Masa.Blazor.Presets;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -18,6 +20,21 @@ builder.Services.AddScoped<Request>();
 builder.Services.AddScoped<IToastService, ToastService>();
 builder.Services.AddBlazoredLocalStorage();
 
-builder.Services.AddMasaBlazor();
+builder.Services.AddMasaBlazor(options =>
+{
+    options.Defaults = new Dictionary<string, IDictionary<string, object?>?>()
+    {
+        {
+            PopupComponents.SNACKBAR, new Dictionary<string, object?>()
+            {
+                { nameof(PEnqueuedSnackbars.Closeable), false },
+                { nameof(PEnqueuedSnackbars.Position), SnackPosition.TopRight },
+                { nameof(PEnqueuedSnackbars.Timeout), 2000 },
+                { nameof(PEnqueuedSnackbars.MaxCount), 3 },
+            }
+        }
+    };
+});
+
 
 await builder.Build().RunAsync();

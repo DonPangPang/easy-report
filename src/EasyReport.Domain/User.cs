@@ -6,6 +6,7 @@ namespace EasyReport.Domain;
 public class User : EntityBase, ISafeDeleted
 {
     public required string Name { get; set; }
+    public string? Email { get; set; }
     public string? Description { get; set; }
     [ForeignKey(nameof(Avatar))]
     public Guid? AvatarId { get; set; }

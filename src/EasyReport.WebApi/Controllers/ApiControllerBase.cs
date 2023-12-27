@@ -46,10 +46,11 @@ public abstract class ApiControllerBase<TQueryParameter, TEntity, TViewDto, TAdd
     public async Task<IActionResult> AddAsync([FromBody] TAddDto dto)
     {
         var entity = dto.MapTo<TEntity>();
+        var id = entity.CreateId();
         await _unitOfWork.AddAsync(entity);
         if (await _unitOfWork.CommitAsync())
         {
-            return NoContent();
+            return Ok(entity);
         }
         return BadRequest();
     }
@@ -63,16 +64,25 @@ public abstract class ApiControllerBase<TQueryParameter, TEntity, TViewDto, TAdd
             return NotFound();
         }
 
-        entity.Map(dto);
+        dto.Map(entity);
         await _unitOfWork.UpdateAsync(entity);
         if (await _unitOfWork.CommitAsync())
         {
-            return NoContent();
+            return Ok(entity);
         }
 
         return BadRequest();
     }
 
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteAsync(Guid id)
+    {
+        await _unitOfWork.Query<TEntity>()
+            .Where(x => x.Id == id)
+            .ExecuteDeleteAsync();
+
+        return Ok();
+    }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteAsync([FromBody] IEnumerable<Guid> ids)

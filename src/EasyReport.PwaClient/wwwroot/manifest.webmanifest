@@ -1,6 +1,6 @@
 {
-  "name": "EasyReport.PwaClient",
-  "short_name": "EasyReport.PwaClient",
+  "name": "周报助手",
+  "short_name": "QTMDZB",
   "id": "./",
   "start_url": "./",
   "display": "standalone",

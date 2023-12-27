@@ -1,8 +1,10 @@
 ﻿using Blazored.LocalStorage;
 using EasyReport.Infrastructure.Dto;
+using EasyReport.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Components;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 
@@ -18,9 +20,7 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
     private HttpClient GetHttpClient()
     {
-        var token = _localStorge.GetItemAsString("token");
-        _httpClient.DefaultRequestHeaders.Remove("Authorization");
-        _httpClient.DefaultRequestHeaders.Add("Autherization", $"Bearer {token}");
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _localStorge.GetItem<string>("token") ?? string.Empty);
         return _httpClient;
     }
 
@@ -30,7 +30,8 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
         await HandleResponseMessageAsync(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+        var json = await response.Content.ReadAsStringAsync();
+        return json.ToObject<T>();
     }
 
     public async Task<T?> GetAsync<T>([Url] string uri, IQueryParameter @params)
@@ -39,7 +40,8 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
         await HandleResponseMessageAsync(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+        var json = await response.Content.ReadAsStringAsync();
+        return json.ToObject<T>();
     }
 
     public async Task<T?> PostAsync<T>([Url] string uri, object? value)
@@ -48,7 +50,8 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
         await HandleResponseMessageAsync(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+        var json = await response.Content.ReadAsStringAsync();
+        return json.ToObject<T>();
     }
 
     public async Task<T?> PostAsync<T>([Url] string uri, object? value, IQueryParameter @params)
@@ -57,7 +60,8 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
         await HandleResponseMessageAsync(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+        var json = await response.Content.ReadAsStringAsync();
+        return json.ToObject<T>();
     }
 
     public async Task<T?> PutAsync<T>([Url] string uri, object? value)
@@ -66,7 +70,8 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
         await HandleResponseMessageAsync(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+        var json = await response.Content.ReadAsStringAsync();
+        return json.ToObject<T>();
     }
 
     public async Task<T?> PutAsync<T>([Url] string uri, object? value, IQueryParameter @params)
@@ -75,7 +80,8 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
         await HandleResponseMessageAsync(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+        var json = await response.Content.ReadAsStringAsync();
+        return json.ToObject<T>();
     }
 
     public async Task<T?> DeleteAsync<T>([Url] string uri)
@@ -84,7 +90,8 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
         await HandleResponseMessageAsync(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+        var json = await response.Content.ReadAsStringAsync();
+        return json.ToObject<T>();
     }
 
     public async Task<T?> DeleteAsync<T>([Url] string uri, IQueryParameter @params)
@@ -93,13 +100,15 @@ public class Request(HttpClient httpClient, NavigationManager navigationManager,
 
         await HandleResponseMessageAsync(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+        var json = await response.Content.ReadAsStringAsync();
+        return json.ToObject<T>();
     }
 
     private async Task HandleResponseMessageAsync(HttpResponseMessage response)
     {
         if (response.IsSuccessStatusCode)
         {
+            await _toastService.SuccessAsync("操作成功");
             return;
         }
 

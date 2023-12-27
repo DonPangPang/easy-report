@@ -1,0 +1,11 @@
+@page "/todo"
+@page "/todo/{id:int}"
+
+<PageTitle>Task</PageTitle>
+<h1>@Id</h1>
+
+
+@code{
+    [Parameter]
+    public int Id { get; set; } = 0;
+}

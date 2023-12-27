@@ -1,4 +1,5 @@
-﻿using EasyReport.Domain;
+﻿using System.Reflection;
+using EasyReport.Domain;
 using EasyReport.Infrastructure.Domain;
 using EasyReport.WebApi.Configurations;
 using EasyReport.WebApi.Services;
@@ -28,7 +29,7 @@ public class EasyReportDbContext(DbContextOptions<EasyReportDbContext> options
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var entityTypes = typeof(IEntity).Assembly.GetTypes()
+        var entityTypes = Assembly.Load("EasyReport.Domain").GetTypes()
             .Where(x => x.IsAssignableTo(typeof(IEntity)) && x is { IsAbstract: false, IsInterface: false })
             .ToArray();
 
@@ -65,11 +66,6 @@ public class EasyReportDbContext(DbContextOptions<EasyReportDbContext> options
 
         foreach (var entityEntry in ChangeTracker.Entries<IEntity>())
         {
-
-            if (entityEntry.State == EntityState.Added)
-            {
-                entityEntry.Entity.Id = Guid.NewGuid();
-            }
 
             if (entityEntry is { Entity: ICreationAudited creation, State: EntityState.Added })
             {

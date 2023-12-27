@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace EasyReport.Infrastructure.Extensions;
 
@@ -8,7 +9,7 @@ public static class JsonExtensions
     {
         try
         {
-            return obj is null ? default : JsonSerializer.Serialize(obj);
+            return obj is null ? default : JsonConvert.SerializeObject(obj);
         }
         catch
         {
@@ -20,7 +21,7 @@ public static class JsonExtensions
     {
         try
         {
-            return string.IsNullOrWhiteSpace(json) || !json.StartsWith("{") ? default : JsonSerializer.Deserialize<T>(json);
+            return string.IsNullOrWhiteSpace(json) || !(json.StartsWith("{") || json.StartsWith("[")) ? default : JsonConvert.DeserializeObject<T>(json);
         }
         catch
         {
