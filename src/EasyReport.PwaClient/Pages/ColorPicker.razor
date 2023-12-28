@@ -1,0 +1,41 @@
+@* ColorPicker.razor *@
+<div style="display: flex; align-items: center;">
+    <label for="colorPicker" style="margin-right: 10px;">@Label</label>
+    @if (ReadOnly)
+    {
+        <div
+            style="width: 20px; height: 20px; background-color: @Value;border: 1px solid grey;">
+        </div>
+    }
+    else
+    {
+        <input id="colorPicker" type="color" value="@Value"
+            @onchange="OnColorChanged" />
+    }
+</div>
+
+<style>
+    .x {
+        border: 1px solid black;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string Value { get; set; } = "#000000";
+
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    private void OnColorChanged(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? "#000000";
+        ValueChanged.InvokeAsync(Value);
+    }
+}

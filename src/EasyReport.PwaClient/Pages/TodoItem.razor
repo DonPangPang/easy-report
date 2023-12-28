@@ -1,6 +1,8 @@
 @inject IJSRuntime JsRuntime
 
-<MCard Class="er-card" OnClick="HandleOnClick">
+<MCard Class="er-card" Elevation="Item.IsCompleted ? 1 : 4"
+    OnClick="HandleOnClick"
+    style="@(Item.IsCompleted ? "background-color: #EEEEEE;": "")">
     <MCheckbox Ripple="true" TValue="bool" Checked="@Item.IsCompleted"
         OnChange="HandleComplate"
         OnIcon="mdi mdi-checkbox-marked-circle-outline"
@@ -21,8 +23,8 @@
     <MSpacer></MSpacer>
     @foreach (var tag in Item.Tags)
     {
-        <MChip Color="Color.Primary" TextColor="Color.White" Class="mr-2" Label
-            Small>
+        <MChip Color="@ToolKitHelper.GetRandomRgbHexString()" TextColor="white"
+            Class="mr-2" Label Small>
             <MTooltip Bottom>
                 <ActivatorContent>
                     <p @attributes="@context.Attrs"

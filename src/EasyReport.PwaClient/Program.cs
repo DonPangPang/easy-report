@@ -29,6 +29,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthProvider>(
 builder.Services.AddScoped<IJwtAuthProvider, JwtAuthProvider>(provider => provider.GetRequiredService<JwtAuthProvider>());
 
 builder.Services.AddSingleton<EventService>();
+builder.Services.AddScoped<FatchDataService>();
 
 builder.Services.AddMasaBlazor(options =>
 {

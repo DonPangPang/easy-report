@@ -52,7 +52,7 @@
         </MCol>
     </MRow>
     <MRow>
-        <MCol Sm="7">
+        <MCol Sm="6">
             <MCard Class="rounded-xl">
                 <MCardTitle>
                     <MIcon Large Left>
@@ -63,7 +63,8 @@
                     <MButton Color="purple" Dark
                         OnClick="OnHandleGroupDialogOpen">添加分组</MButton>
                     <MDialog @bind-Value="_groupDialogVisible" MaxWidth="400"
-                        ContentClass="rounded-xl">
+                        ContentClass="rounded-xl"
+                        OnOutsideClick="OnHandleGroupDialogClose">
                         <MCard Rounded="true">
                             <MCardTitle>添加分组</MCardTitle>
                             <MCardText>
@@ -79,7 +80,7 @@
                                 <MButton Color="primary" Text
                                     OnClick="OnHandleSaveGroup">确定</MButton>
                                 <MButton Text
-                                    OnClick="()=>_groupDialogVisible = false">取消
+                                    OnClick="OnHandleGroupDialogClose">取消
                                 </MButton>
                             </MCardActions>
                         </MCard>
@@ -113,7 +114,7 @@
                 </MCardText>
             </MCard>
         </MCol>
-        <MCol Sm="5">
+        <MCol Sm="6">
             <MCard Class="rounded-xl">
                 <MCardTitle>
                     <MIcon Large Left>
@@ -124,7 +125,8 @@
                     <MButton Color="purple" Dark
                         OnClick="()=>_tagDialogVisible = true">添加标签</MButton>
                     <MDialog @bind-Value="_tagDialogVisible" MaxWidth="400"
-                        ContentClass="rounded-xl">
+                        ContentClass="rounded-xl"
+                        OnOutsideClick="OnHandleTagDialogClose">
                         <MCard>
                             <MCardTitle>添加标签</MCardTitle>
                             <MCardText>
@@ -132,13 +134,21 @@
                                     @bind-Value="@_tag.Name" />
                                 <MTextField Label="描述"
                                     @bind-Value="@_tag.Description" />
+                                <div style="display: flex;gap:10px;">
+                                    <ColorPicker Label="背景色"
+                                        @bind-value="@_tag.Color">
+                                    </ColorPicker>
+                                    <ColorPicker Label="文本颜色"
+                                        @bind-value="@_tag.TextColor">
+                                    </ColorPicker>
+                                </div>
                             </MCardText>
                             <MCardActions>
                                 <MSpacer></MSpacer>
                                 <MButton Color="primary" Text
                                     OnClick="OnHandleSaveTag">确定</MButton>
                                 <MButton Text
-                                    OnClick="()=>_tagDialogVisible = false">取消
+                                    OnClick="OnHandleTagDialogClose">取消
                                 </MButton>
                             </MCardActions>
                         </MCard>
@@ -148,7 +158,14 @@
                     <MDataTable Headers="tagHeaders" Items="_tags"
                         ItemsPerPage="5">
                         <ItemColContent>
-                            @if (context.Header.Value == "actions")
+                            @if (@context.Header.Value == nameof(TodoTag.Name))
+                            {
+                                <MChip Label Small Color="@context.Item.Color"
+                                    TextColor="@context.Item.TextColor">
+                                    @context.Item.Name
+                                </MChip>
+                            }
+                            else if (context.Header.Value == "actions")
                             {
                                 <MIcon Small Class="mr-2"
                                     OnClick="()=>OnHandleEditTag(context.Item)">
@@ -162,6 +179,19 @@
                             {
                                 <span
                                     class="d-inline-block text-truncate">@context.Item.Description</span>
+                            }
+                            else if (context.Header.Value ==
+                            nameof(TodoTag.Color))
+                            {
+                                <ColorPicker Value="@context.Item.Color" ReadOnly>
+                                </ColorPicker>
+                            }
+                            else if (context.Header.Value ==
+                            nameof(TodoTag.TextColor))
+                            {
+                                <ColorPicker Value="@context.Item.TextColor"
+                                    ReadOnly>
+                                </ColorPicker>
                             }
                             else
                             {
@@ -268,7 +298,7 @@ new () { Text = "操作", Value = "actions" }
         _editedIndex = -1;
         _groupDialogVisible = false;
 
-        StateHasChanged();
+        @* StateHasChanged(); *@
     }
     #endregion Group
 
@@ -280,6 +310,8 @@ new () { Text = "操作", Value = "actions" }
     List<DataTableHeader<TodoTag>> tagHeaders = new(){
 new () { Text = "名称", Value = "Name" },
 new () { Text = "描述", Value = "Description" },
+new () { Text = "背景色", Value = nameof(TodoTag.Color) },
+new () { Text = "文本颜色", Value = nameof(TodoTag.TextColor) },
 new () { Text = "操作", Value = "actions" }
 };
 
@@ -290,14 +322,14 @@ new () { Text = "操作", Value = "actions" }
     {
         if (_editedIndex > -1)
         {
-            await Request.PutAsync<string>("api/TodoTag", _tag);
+            var result = await Request.PutAsync<TodoTag>("api/TodoTag", _tag);
             _tagDialogVisible = true;
-            _tags[_editedIndex] = _tag;
+            _tags[_editedIndex] = result ?? _tags[_editedIndex];
         }
         else
         {
-            await Request.PostAsync<string>("api/TodoTag", _tag);
-            _tags.Add(_tag);
+            var result = await Request.PostAsync<TodoTag>("api/TodoTag", _tag);
+            _tags.Add(result ?? _tag);
         }
 
 

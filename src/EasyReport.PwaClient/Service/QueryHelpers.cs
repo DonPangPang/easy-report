@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Data;
 using EasyReport.Infrastructure.Dto;
 
 namespace EasyReport.PwaClient.Service;
@@ -52,5 +53,18 @@ public class QueryHelpers
 
         var queryString = string.Join("&", queryStringList);
         return $"{uri}?{queryString}";
+    }
+}
+
+
+public class ToolKitHelper
+{
+    public static string GetRandomRgbHexString()
+    {
+        var random = new Random();
+        var r = random.Next(0, 255);
+        var g = random.Next(0, 255);
+        var b = random.Next(0, 255);
+        return $"#{r:X2}{g:X2}{b:X2}";
     }
 }

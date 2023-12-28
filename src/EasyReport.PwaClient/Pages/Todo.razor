@@ -1,64 +1,172 @@
 @page "/todo"
 @page "/todo/{id:int}"
 @inject Request Request
+@inject FatchDataService FatchDataService
 
 <PageTitle>Task</PageTitle>
 
-@foreach (var item in todos)
+@foreach (var item in todos.OrderBy(x => x.IsCompleted).ThenBy(x => x.EndTime))
 {
-    <TodoItem Item="item" />
+    <TodoItem Item="item" OnClick="HandleSelectItem" />
 }
 
 
-<MNavigationDrawer @bind-MiniVariant="_mini" MiniVariantWidth="0" App Right
+<MNavigationDrawer @bind-MiniVariant="_mini" MiniVariantWidth="0.01" App Right
     Permanent>
     <MListItem Class="px-2">
-        <MListItemAvatar Size="40">
-            <MImage Src="@("https://randomuser.me/api/portraits/men/85.jpg")">
-            </MImage>
-        </MListItemAvatar>
-
-        <MListItemTitle>MASA</MListItemTitle>
-
+        @* <MListItemTitle>详情</MListItemTitle> *@
+        <MSpacer></MSpacer>
         <MButton Icon OnClick="() => _mini = !_mini">
-            <MIcon>mdi-chevron-left</MIcon>
+            <MIcon>mdi mdi-window-close</MIcon>
         </MButton>
     </MListItem>
 
-    <MDivider></MDivider>
+    @* <MDivider></MDivider> *@
 
-    <MList Dense>
-        @foreach (var item in _items)
-        {
-            <MListItem Link>
-                <MListItemIcon>
-                    <MIcon>@item.Icon</MIcon>
-                </MListItemIcon>
+    <MContainer>
+        <MTextarea Label="内容" @bind-Value="_selectedItem.Title"
+            Rows="3" RowHeight="14" Outlined Dense HideDetails="true" style="font-size:14px">
 
-                <MListItemContent>
-                    <MListItemTitle>@item.Title</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-        }
-    </MList>
+        </MTextarea>
+        <Space H="@Space"></Space>
+        <MTextarea Label="备注" @bind-Value="_selectedItem.Description"
+            Rows="4" RowHeight="14" Outlined Dense HideDetails="true" style="font-size:14px;">
+
+        </MTextarea>
+        <Space H="@Space"></Space>
+        <MSelect Items="_groups" Label="分组" @bind-Value="_selectedItem.GroupId" ItemText="x=>x.Name" ItemValue="x=>x.Id" Outlined Dense HideDetails="true" MenuProps="x=>{x.OffsetY = true;}">
+             <SelectionContent Context="data">
+                <span style="font-size: 0.7rem;">@data.Item.Name</span>
+        </SelectionContent>  
+        </MSelect>
+<Space H="@Space"></Space>
+        <MSelect @bind-Value="_tagIds"
+                        Items="_tags"
+                        Chips
+                        Dense HideDetails="true"
+                        Label="标签"
+                        ItemText="u => u.Name"
+                        ItemValue="u => u.Id"
+                        Multiple
+                        Outlined
+                        MenuProps="x=>{x.OffsetY = true;}">
+        <SelectionContent Context="data">
+                <MChip Label Small Color="@data.Item.Color" TextColor="@data.Item.TextColor">
+                    <span >@data.Item.Name</span>
+                </MChip>
+                
+        </SelectionContent>       
+                        </MSelect>
+                        <Space H="@Space"></Space>
+            <MMenu @bind-Value="_menu1"
+               CloseOnContentClick="true"
+               NudgeRight="40"
+               Transition="scale-transition"
+               OffsetY
+               MinWidth="@("auto")">
+            <ActivatorContent>
+                <MTextField @bind-Value="_startTime"
+                            Label="开始时间"
+                            PrependIcon="mdi-calendar"
+                            Readonly
+                            HideDetails="true"
+                            @attributes="context.Attrs"></MTextField>
+            </ActivatorContent>
+            <ChildContent>
+                <MDatePicker Label="开始时间" @bind-Value="_startTime" Outlined Dense HideDetails="true"
+                    OnInput="()=>_menu2=false"></MDatePicker>
+            </ChildContent>
+        </MMenu>
+<Space H="@Space"></Space>
+        <MMenu @bind-Value="_menu2"
+               CloseOnContentClick="true"
+               NudgeRight="40"
+               Transition="scale-transition"
+               OffsetY
+               MinWidth="@("auto")">
+            <ActivatorContent>
+                <MTextField @bind-Value="_endTime"
+                            Label="结束时间"
+                            PrependIcon="mdi-calendar"
+                            Readonly
+                            HideDetails="true"
+                              @attributes="context.Attrs"></MTextField>
+            </ActivatorContent>
+            <ChildContent>
+                <MDatePicker Label="结束时间" @bind-Value="_endTime" Outlined Dense 
+                    OnInput="()=>_menu2=false"></MDatePicker>
+            </ChildContent>
+        </MMenu>
+        <Space H="@Space"></Space>
+                @* <MDatePicker  Label="开始时间" @bind-Value="_selectedItem.StartTime" Outlined Dense></MDatePicker>
+                <MDatePicker  Label="结束时间" @bind-Value="_selectedItem.EndTime" Outlined Dense></MDatePicker> *@
+        <MCard>
+            <div style="padding:0.5rem">
+                <div style="font-size:12px;display:flex;">
+外部链接
+<MSpacer></MSpacer>
+<MButton Small Text>
+                    <MIcon Small>mdi-pencil</MIcon>
+                </MButton>
+            </div>
+            <div style="min-height:2rem;margin-top:0.5rem;">
+                @foreach(var link in _links){
+                   <div style="text-align: center;"> <a href="@link" class="d-inline-block text-truncate" style="font-size: 12px;width:100%">@link</a></div>
+                }
+            </div>
+            </div>
+        </MCard>
+        <Space H="@Space"></Space>
+        <MCard>
+            <div style="padding:0.5rem">
+                <div style="font-size:12px;display:flex;">
+资源
+<MSpacer></MSpacer>
+<MButton Small  Text>
+                    <MIcon Small>mdi-pencil</MIcon>
+                </MButton>
+            </div>
+            <div style="min-height:2rem;margin-top:0.5rem;">
+                @foreach(var resource in _resources){
+                   <div style="text-align: center;"> <a href="@resource.Uri" class="d-inline-block text-truncate" style="font-size: 12px;width:100%">@resource.Name</a></div>
+                }
+            </div>
+            </div>
+        </MCard>
+    </MContainer>
 </MNavigationDrawer>
 
 
-<TodoItem OnClick="()=>_mini = !_mini" />
+<TodoItem OnClick="HandleSelectItem" />
 <TodoItem />
 <TodoItem />
 <TodoItem />
 
+<style>
+    .t{
+        border-color: red;
+    }
+</style>
+
 @code {
+    const double Space = 0.5;
     [Parameter]
     public int Id { get; set; } = 0;
 
     (DateTime startTime, DateTime endTiem) dateRange => (DateTime.Now.AddDays(-Id),
     DateTime.Now);
 
-    protected override Task OnInitializedAsync()
+    List<TodoGroupDto> _groups = new List<TodoGroupDto>();
+    List<TodoTagDto> _tags = new List<TodoTagDto>();
+
+    List<Guid> _tagIds = new List<Guid>();
+
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+        _groups = await FatchDataService.FatchGroupsDataAsync();
+        _tags = await FatchDataService.FatchTagsDataAsync();
+
+        await base.OnInitializedAsync();
     }
 
     PagedList<TodoDto> todos = new PagedList<TodoDto>();
@@ -81,15 +189,40 @@
     }
 
     private bool _mini = true;
-    private class ItemDemo
+
+    TodoDto _selectedItem = new TodoDto() { Title = "请选择子项" };
+
+    DateOnly? _startTime;
+    DateOnly? _endTime;
+
+    void HandleSelectItem(TodoDto item)
     {
-        public string Title { get; set; }
-        public string Icon { get; set; }
+        _selectedItem = item;
+        _tagIds = _selectedItem.Tags.Where(x=>_tags.Select(x=>x.Id).Contains(x.Id)).Select(x=>x.Id).ToList();
+        _mini = !_mini;
     }
-    private List<ItemDemo> _items = new()
-{
-new ItemDemo { Title = "Home", Icon = "mdi-home-city" },
-new ItemDemo { Title = "My Account", Icon = "mdi-account" },
-new ItemDemo { Title = "Users", Icon = "mdi-account-group-outline" }
-};
+
+    bool _menu1 = false;
+    bool _menu2 = false;
+
+    List<string> _links = new List<string>(){
+        "http://www.baidu.comhttp://www.baidu.comhttp://www.baidu.comhttp://www.baidu.comhttp://www.baidu.com",
+        "http://www.baidu.com",
+        "http://www.baidu.com",
+        };
+    List<Resource> _resources = new List<Resource>(){
+        new Resource{ Name="资源1",Uri="http://www.baidu.com"},
+        new Resource{ Name="资源2",Uri="http://www.baidu.com"},
+        new Resource{ Name="资源3",Uri="http://www.baidu.com"},
+        };
+
+    void HandleEditLink(){
+
+    }
+
+    async Task HandleSave()
+    {
+        _selectedItem.Tags = _tags.Where(x=>_tagIds.Contains(x.Id)).ToList();
+        await Request.PostAsync<TodoDto>("api/todo", _selectedItem);
+    }
 }
